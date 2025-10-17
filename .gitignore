@@ -1,0 +1,17 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.ruff_cache
+
+# Django test fixtures
+fixtures/testproject/db.sqlite3
+fixtures/testproject/django.log
+*.sqlite3
+*.log

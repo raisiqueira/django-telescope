@@ -1,0 +1,26 @@
+[project]
+name = "django-mcp"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Rai Siqueira", email = "rai93siqueira@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "django>=4.2",
+    "fastmcp>=2.12.4",
+]
+
+[project.scripts]
+django-mcp = "django_mcp:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "ruff>=0.14.0",
+]
