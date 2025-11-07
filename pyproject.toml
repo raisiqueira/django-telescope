@@ -1,7 +1,7 @@
 [project]
 name = "django-mcp"
 version = "0.1.0"
-description = "Add your description here"
+description = "A Model Context Protocol (MCP) server for Django applications, inspired by Laravel Boost"
 readme = "README.md"
 authors = [
     { name = "Rai Siqueira", email = "rai93siqueira@gmail.com" }
