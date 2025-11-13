@@ -7,6 +7,7 @@ A Model Context Protocol (MCP) server for Django applications, inspired by [Lara
 ## Table of Contents
 
 - [Features](#features)
+- [Screenshots](#screenshots)
 - [Installation](#installation)
   - [For End Users](#for-end-users)
   - [For Development](#for-development)
@@ -34,6 +35,19 @@ A Model Context Protocol (MCP) server for Django applications, inspired by [Lara
 - **Log Reading**: Access recent application logs with filtering
 - **Read-Only**: All tools are safe, read-only operations
 - **Fast**: Built on [FastMCP](https://gofastmcp.com/) for efficient async operations
+
+## Screenshots
+
+<details>
+<summary>Click to view screenshots</summary>
+
+### Django Telescope in Action
+
+![Django Telescope Example](./assets/example_mcp01.png)
+
+*Django Telescope MCP server providing Django project introspection through AI assistants (Example using [OpenCode](https://opencode.ai/))*
+
+</details>
 
 ## Installation
 
@@ -204,7 +218,9 @@ django-telescope --settings myproject.settings
 django-telescope --settings myproject.settings --transport sse
 ```
 
-## Available Tools
+## Available Tools and Prompts
+
+### Tools
 
 ### 1. `application_info`
 Get Django and Python versions, installed apps, middleware, database engine, and debug mode status.
@@ -246,10 +262,38 @@ Reverse a named URL pattern to get its actual URL path. Supports both positional
 ### 10. `read_recent_logs`
 Read recent log entries with optional filtering by log level (DEBUG, INFO, WARNING, ERROR, CRITICAL).
 
+### Prompts
+
+MCP prompts provide reusable message templates to help guide interactions with AI assistants.
+
+### 1. `search_django_docs`
+Generate a formatted prompt to help search for specific topics in Django documentation.
+
+**Arguments:**
+- `topic`: The Django topic or feature to search for (e.g., "models", "queryset", "migrations", "authentication")
+
+**Returns:**
+A formatted prompt that includes:
+- The current Django version being used
+- Direct links to the appropriate version of Django documentation
+- Guidance on what information to look for
+- Request for best practices and code examples
+
+**Example topics:**
+- "models" - Learn about Django models and ORM
+- "queryset filtering" - Query optimization and filtering
+- "migrations" - Database schema management
+- "authentication" - User authentication and permissions
+- "middleware" - Request/response processing
+- "forms" - Form handling and validation
+
+This prompt automatically adapts to your Django version (e.g., 5.2, 4.2) to ensure documentation compatibility.
+
 ## Example Usage with AI Assistants
 
 Once configured, you can ask your AI assistant questions like:
 
+**Using Tools:**
 - "What models are in this Django project?"
 - "Show me all URL patterns"
 - "What's the database schema for the users table?"
@@ -258,6 +302,11 @@ Once configured, you can ask your AI assistant questions like:
 - "What's the URL for blog post with ID 5?"
 - "Reverse the 'post_detail' URL pattern with pk=10"
 - "Show me recent error logs"
+
+**Using Prompts:**
+- "Use the search_django_docs prompt for 'models'" - Get help finding Django model documentation
+- "Search Django docs for 'authentication'" - Learn about Django authentication
+- "Show me Django documentation about 'migrations'" - Migration best practices and guides
 
 ## Development & Testing
 
