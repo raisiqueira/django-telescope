@@ -1,6 +1,6 @@
 # Django AI Boost
 
-<!-- mcp-name: io.github.raisiqueira/django-ai-boost -->
+<!-- mcp-name: io.github.vintasoftware/django-ai-boost -->
 
 A Model Context Protocol (MCP) server for Django applications, inspired by [Laravel Boost](https://github.com/laravel/boost). This server exposes Django project information through MCP tools, enabling AI assistants to better understand and interact with Django codebases.
 
