@@ -259,7 +259,28 @@ Reverse a named URL pattern to get its actual URL path. Supports both positional
 - `args`: Optional list of positional arguments
 - `kwargs`: Optional dict of keyword arguments
 
-### 10. `read_recent_logs`
+### 10. `query_model`
+Query a Django model with read-only operations using the Django ORM manager. This tool allows safe querying of any Django model with filtering, ordering, and pagination.
+
+**Arguments:**
+- `app_label`: The Django app label (e.g., "blog")
+- `model_name`: The model name (e.g., "Post")
+- `filters`: Optional dict of field lookups (e.g., `{"status": "published", "featured": true}`)
+- `order_by`: Optional list of fields to order by (e.g., `["-created_at", "title"]`)
+- `limit`: Maximum number of results to return (default: 100, max: 1000)
+
+**Returns:**
+- Total count of matching objects
+- Number of results returned
+- List of model instances as dictionaries with all field values
+- For foreign keys, includes both the ID and string representation
+
+**Example Queries:**
+- Get all published posts: `filters={"status": "published"}`
+- Get featured posts ordered by date: `filters={"featured": true}`, `order_by=["-created_at"]`
+- Get recent posts with limit: `order_by=["-created_at"]`, `limit=10`
+
+### 11. `read_recent_logs`
 Read recent log entries with optional filtering by log level (DEBUG, INFO, WARNING, ERROR, CRITICAL).
 
 ### Prompts
@@ -301,6 +322,9 @@ Once configured, you can ask your AI assistant questions like:
 - "What's the value of the DEBUG setting?"
 - "What's the URL for blog post with ID 5?"
 - "Reverse the 'post_detail' URL pattern with pk=10"
+- "Show me all published blog posts"
+- "Get the 10 most recent posts ordered by creation date"
+- "Find all featured posts in the blog"
 - "Show me recent error logs"
 
 **Using Prompts:**
@@ -315,6 +339,9 @@ The project includes a comprehensive test suite and a fixture Django project for
 ```bash
 # Test the MCP server with the fixture project
 uv run python test_server.py
+
+# Test the query_model tool
+uv run python test_query_model.py
 
 # Run the MCP server with the test project
 export PYTHONPATH="${PYTHONPATH}:./fixtures/testproject"

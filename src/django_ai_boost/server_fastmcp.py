@@ -429,6 +429,114 @@ async def reverse_url(
         return {"error": f"Error reversing URL: {str(e)}"}
 
 
+@mcp.tool()
+async def query_model(
+    app_label: str,
+    model_name: str,
+    filters: dict[str, Any] | None = None,
+    order_by: list[str] | None = None,
+    limit: int = 100,
+) -> dict[str, Any]:
+    """
+    Query a Django model with read-only operations using the Django ORM manager.
+
+    Args:
+        app_label: The app label (e.g., "blog")
+        model_name: The model name (e.g., "Post")
+        filters: Optional dictionary of field lookups (e.g., {"status": "published", "featured": true})
+        order_by: Optional list of fields to order by (e.g., ["-created_at", "title"])
+        limit: Maximum number of results to return (default: 100, max: 1000)
+
+    Returns:
+        Dictionary containing query results or error message.
+    """
+
+    @sync_to_async
+    def execute_query():
+        try:
+            # Get the model
+            try:
+                model = apps.get_model(app_label, model_name)
+            except LookupError:
+                return {"error": f"Model '{app_label}.{model_name}' not found"}
+
+            # Enforce maximum limit for safety
+            max_limit = 1000
+            actual_limit = min(limit, max_limit) if limit else 100
+
+            # Start with all objects
+            queryset = model.objects.all()
+
+            # Apply filters if provided
+            if filters:
+                try:
+                    queryset = queryset.filter(**filters)
+                except Exception as e:
+                    return {"error": f"Invalid filter parameters: {str(e)}"}
+
+            # Apply ordering if provided
+            if order_by:
+                try:
+                    queryset = queryset.order_by(*order_by)
+                except Exception as e:
+                    return {"error": f"Invalid order_by parameters: {str(e)}"}
+
+            # Get total count before limiting
+            total_count = queryset.count()
+
+            # Limit results
+            queryset = queryset[:actual_limit]
+
+            # Convert queryset to list of dictionaries
+            results = []
+            for obj in queryset:
+                obj_dict = {}
+                for field in model._meta.get_fields():
+                    # Skip reverse relations
+                    if field.many_to_many or field.one_to_many:
+                        continue
+
+                    field_name = field.name
+                    try:
+                        value = getattr(obj, field_name)
+
+                        # Handle different field types
+                        if value is None:
+                            obj_dict[field_name] = None
+                        elif hasattr(field, "related_model") and field.related_model:
+                            # Foreign key - store the pk
+                            obj_dict[field_name] = value.pk if value else None
+                            obj_dict[f"{field_name}_str"] = (
+                                str(value) if value else None
+                            )
+                        elif isinstance(value, (str, int, float, bool)):
+                            obj_dict[field_name] = value
+                        else:
+                            # For dates, times, and other complex types
+                            obj_dict[field_name] = str(value)
+                    except Exception:
+                        # Skip fields that can't be accessed
+                        continue
+
+                results.append(obj_dict)
+
+            return {
+                "app": app_label,
+                "model": model_name,
+                "total_count": total_count,
+                "returned_count": len(results),
+                "limit": actual_limit,
+                "filters": filters or {},
+                "order_by": order_by or [],
+                "results": results,
+            }
+
+        except Exception as e:
+            return {"error": f"Error executing query: {str(e)}"}
+
+    return await execute_query()
+
+
 @mcp.prompt()
 async def search_django_docs(topic: str) -> str:
     """
